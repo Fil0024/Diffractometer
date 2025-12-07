@@ -5,25 +5,20 @@
 # Długość fali promieniowania K-Alpha1 (Cu) [Angstrem]
 WAVELENGTH_KALPHA1 = 1.54056
 
-# Parametry odniesienia dla próbki #1 (GaAs)
-# Używane do obliczenia poprawki instrumentalnej (przesunięcia zera)
-REF_LATTICE_CONSTANT_A = 5.653  # [Angstrem]
-REF_HKL = (1, 1, 1)             # Indeksy Millera refleksu
+# --- MATERIAŁ REFERENCYJNY (Podłoże / Składnik A) ---
+# Np. GaAs
+REF_LATTICE_CONSTANT_A = 5.653
+REF_HKL = (1, 1, 1)
+
+# --- MATERIAŁ DOMIESZKI (Składnik B) ---
+# Używany do prawa Vegarda: a_mix = (1-x)*a_A + x*a_B
+# Np. dla InAs a = 6.0583
+# Np. dla AlAs a = 5.6605
+# Zmień tę wartość zgodnie z tym, co jest "drugim" składnikiem w Twoich próbkach!
+LATTICE_CONSTANT_B = 6.0583 
 
 # --- KONFIGURACJA WYGLĄDU WYKRESÓW ---
-
-# Czy pokazywać tytuły na wykresach? (True/False)
 SHOW_TITLES = True
-
-# Czy pokazywać legendę na wykresach? (True/False)
 SHOW_LEGENDS = True
-
-# Czy pokazywać tekst z wynikami (parametry dopasowania) na wykresach?
 SHOW_PARAM_TEXT = True
-
-# Opcjonalnie: Nadpisanie tytułów. 
-# Jeśli klucz (nazwa pliku bez rozszerzenia) istnieje w słowniku, zostanie użyty podany tytuł.
-CUSTOM_TITLES = {
-    # 'plot_01_2t0za': 'Skan kalibracyjny 1',
-    # 'plot_all_samples_2to': 'Moje porownanie',
-}
+CUSTOM_TITLES = {}
