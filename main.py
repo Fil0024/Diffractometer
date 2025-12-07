@@ -27,17 +27,14 @@ def gaussian_linear(x, amp, mean, sigma, m, c):
     return amp * np.exp(-(x - mean)**2 / (2 * sigma**2)) + m * x + c
 
 def fit_peak(df):
-    """
-    Dopasowuje funkcję Gaussa z tłem liniowym.
-    Zwraca (popt, pcov) lub None, jeśli się nie uda.
-    """
+    """Dopasowuje funkcję Gaussa z tłem liniowym."""
     if df.empty or 'Angle' not in df or 'Intensity_cps' not in df: return None
     x = df['Angle'].values
     y = df['Intensity_cps'].values
     if len(x) < 5: return None
 
     try:
-        # Estymacja parametrów początkowych
+        # Estymacja tła
         n_bg = max(1, int(len(x) * 0.1))
         x_bg = np.concatenate([x[:n_bg], x[-n_bg:]])
         y_bg = np.concatenate([y[:n_bg], y[-n_bg:]])
@@ -51,25 +48,19 @@ def fit_peak(df):
         y_pure = y - (m_guess * x + c_guess)
         mean_guess = x[np.argmax(y_pure)]
         amp_guess = np.max(y_pure)
-        
-        # Zabezpieczenie przed ujemną amplitudą przy szumie
         if amp_guess <= 0: amp_guess = np.max(y)
-
+        
         total_intensity = np.sum(y_pure[y_pure > 0])
         if total_intensity > 0:
             sigma_guess = np.sqrt(np.abs(np.sum((x - mean_guess)**2 * y_pure) / total_intensity))
         else:
             sigma_guess = 0.05
-            
         if sigma_guess == 0 or np.isnan(sigma_guess): sigma_guess = 0.05
 
         p0 = [amp_guess, mean_guess, sigma_guess, m_guess, c_guess]
-        
-        # curve_fit zwraca parametry (popt) i macierz kowariancji (pcov)
         popt, pcov = curve_fit(gaussian_linear, x, y, p0=p0)
         return popt, pcov
-    except Exception as e:
-        # print(f"Fit error: {e}") # Opcjonalnie do debugowania
+    except:
         return None
 
 def calculate_theoretical_2theta(a, wavelength, hkl=(1,1,1)):
@@ -98,20 +89,16 @@ def calculate_uncertainty(two_theta_deg, delta_2theta_deg, wavelength, hkl=(1,1,
 
 def calculate_vegard_x(a_measured, da_measured, a_A, a_B):
     denominator = a_B - a_A
-    if denominator == 0:
-        return 0, 0
+    if denominator == 0: return 0, 0
     x = (a_measured - a_A) / denominator
     dx = da_measured / np.abs(denominator)
     return x, dx
 
 def plot_vegard_line(results, filename):
     plt.figure(figsize=(8, 6))
-    
     x_vals = [r['Vegard_x'] for r in results]
-    # Zabezpieczenie dla pustej listy lub samych zer
     max_x = max(x_vals) if x_vals else 1.0
     if max_x == 0: max_x = 0.1
-    
     x_range = np.linspace(0, max_x * 1.2, 100)
     
     a_A = CONFIG.REF_LATTICE_CONSTANT_A
@@ -146,8 +133,8 @@ def main():
         print(f"BŁĄD: Brak folderu {DATA_DIR}")
         return
 
-    # 1. Kalibracja (wiązka) - opcjonalne, bez zmian
-    print("\n[1/4] Analiza wiązki (pliki 01, 02, 03)...")
+    # 1. Kalibracja (wiązka)
+    print("\n[1/4] Analiza wiązki...")
     calib_files = ['01_2t0za.csv', '02_2t0ba.csv', '03_2t0ba.csv']
     calib_data = []
     for fname in calib_files:
@@ -177,13 +164,8 @@ def main():
             popt_ref, pcov_ref = fit_res
             meas_2theta_ref = popt_ref[1]
             meas_sigma_ref = popt_ref[2]
-            
             correction_delta = meas_2theta_ref - theo_2theta_ref
-            
-            # W tym ćwiczeniu często przyjmuje się FWHM jako niepewność graniczną, 
-            # ale możemy też użyć błędu dopasowania. Tu zostawiam FWHM jako "bezpieczny" błąd pozycji.
             uncertainty_correction = 2.355 * meas_sigma_ref
-            
             print(f"  Poprawka instrumentalna: {correction_delta:.4f} deg")
         else:
             print("  Błąd dopasowania piku referencyjnego.")
@@ -202,14 +184,12 @@ def main():
     all_2to_scans = []
 
     for name, files in samples_map.items():
-        # Omega (bez zmian)
         f_oza = os.path.join(DATA_DIR, files['oza'])
         if os.path.exists(f_oza):
             _, df_o = utils.parse_xrd_file(f_oza)
             if not df_o.empty:
                 figures.plot_single_scan(df_o, f'Omega {name}', os.path.join(RESULTS_DIR, f'plot_{name}_omega.pdf'))
 
-        # 2Theta/Omega
         f_2to = os.path.join(DATA_DIR, files['2to'])
         if not os.path.exists(f_2to): continue
         _, df_2t = utils.parse_xrd_file(f_2to)
@@ -221,24 +201,15 @@ def main():
             popt, pcov = fit_res
             amp, meas_2theta, sigma, m, c = popt
             
-            # Obliczenia FWHM
             fwhm = 2.355 * sigma
-            
-            # Obliczenie niepewności (błędu) FWHM
-            # Błąd sigma to pierwiastek z elementu diagonalnego macierzy kowariancji
             sigma_err = np.sqrt(pcov[2, 2])
             fwhm_err = 2.355 * sigma_err
             
-            # Poprawki
             corrected_2theta = meas_2theta - correction_delta
-            # Niepewność całkowita pozycji (uwzględnia szerokość piku i błąd kalibracji)
             total_unc_pos = np.sqrt(fwhm**2 + uncertainty_correction**2)
             
-            # Stała sieci
             a = calculate_lattice_from_2theta(corrected_2theta, CONFIG.WAVELENGTH_KALPHA1)
             da = calculate_uncertainty(corrected_2theta, total_unc_pos, CONFIG.WAVELENGTH_KALPHA1)
-            
-            # Prawo Vegarda
             x_vegard, dx_vegard = calculate_vegard_x(a, da, CONFIG.REF_LATTICE_CONSTANT_A, CONFIG.LATTICE_CONSTANT_B)
             
             results.append({
@@ -250,20 +221,30 @@ def main():
                 'Lattice_a': round(a, 5),
                 'Uncertainty_a': round(da, 5),
                 'Vegard_x': round(x_vegard, 4),
-                'Uncertainty_x': round(dx_vegard, 4)
+                'Uncertainty_x': round(dx_vegard, 4),
+                'Background_Slope': round(m, 4),
+                'Background_Intercept': round(c, 4)
             })
             
-            # Tekst na wykresie
             info = (f"Corr 2T = {corrected_2theta:.3f}\n"
                     f"FWHM = {fwhm:.3f} +/- {fwhm_err:.3f}\n"
                     f"a = {a:.4f}\n"
                     f"x = {x_vegard:.3f}")
             
-            figures.plot_fit(df_2t, popt, gaussian_linear, f'Fit {name}', 
-                             os.path.join(RESULTS_DIR, f'plot_{name}_fit.pdf'), info)
+            # --- ZMIANA: Generowanie dwóch wykresów (LIN i LOG) ---
+            
+            # 1. Skala Liniowa (suffix _lin)
+            figures.plot_fit(df_2t, popt, gaussian_linear, f'Fit {name} (Lin)', 
+                             os.path.join(RESULTS_DIR, f'plot_{name}_fit.pdf'), 
+                             info, log_scale=False)
+
+            # 2. Skala Logarytmiczna (suffix _log)
+            figures.plot_fit(df_2t, popt, gaussian_linear, f'Fit {name} (Log)', 
+                             os.path.join(RESULTS_DIR, f'plot_{name}_fit_log.pdf'), 
+                             info, log_scale=True)
 
     # 4. Zapis
-    print("\n[4/4] Generowanie raportu...")
+    print("\n[4/4] Generowanie raportu CSV...")
     if all_2to_scans:
         figures.plot_combined_scans(all_2to_scans, 'Zestawienie 2Theta/Omega', 
                                     os.path.join(RESULTS_DIR, 'plot_all_samples_2to.pdf'))
@@ -271,15 +252,16 @@ def main():
     if results:
         plot_vegard_line(results, os.path.join(RESULTS_DIR, 'plot_vegard_law.pdf'))
         
+        # Zapis CSV (wszystkie kolumny, w tym tło)
         res_df = pd.DataFrame(results)
-        
-        # Wybór kolumn do wyświetlenia w konsoli
-        cols_to_show = ['Probka', 'Corrected_2Theta', 'FWHM', 'Uncertainty_FWHM', 'Lattice_a', 'Vegard_x']
-        print("\n--- WYNIKI ---")
+        csv_path = os.path.join(RESULTS_DIR, 'final_results.csv')
+        res_df.to_csv(csv_path, index=False, sep=';')
+        print(f"Plik CSV: {csv_path}")
+
+        # Podgląd w konsoli
+        cols_to_show = ['Probka', 'Corrected_2Theta', 'FWHM', 'Lattice_a', 'Vegard_x', 'Background_Slope']
+        print("\n--- PODGLĄD WYNIKÓW ---")
         print(res_df[cols_to_show])
-        
-        res_df.to_csv(os.path.join(RESULTS_DIR, 'final_results.csv'), index=False, sep=';')
-        print(f"\nPlik CSV: {os.path.join(RESULTS_DIR, 'final_results.csv')}")
 
 if __name__ == "__main__":
     main()

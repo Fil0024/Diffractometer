@@ -14,7 +14,7 @@ def _apply_style(ax, title, filename):
     if CONFIG.SHOW_LEGENDS:
         ax.legend()
         
-    ax.grid(True, linestyle='--', alpha=0.6, which='both') # which='both' dla log scale
+    ax.grid(True, linestyle='--', alpha=0.6, which='both')
 
 def plot_single_scan(df, title, filename):
     fig, ax = plt.subplots(figsize=(8, 6))
@@ -64,44 +64,32 @@ def plot_combined_shifted_scans(data_list, title, filename):
     plt.close()
     print(f"Zapisano wykres przesunięty: {filename}")
 
-def plot_fit(df, popt, func, title, filename, param_text=""):
+# ZMODYFIKOWANA FUNKCJA
+def plot_fit(df, popt, func, title, filename, param_text="", log_scale=False):
     fig, ax = plt.subplots(figsize=(8, 6))
     
     # 1. Rysowanie danych
     ax.plot(df['Angle'], df['Intensity_cps'], 'b.', markersize=3, label='Dane pomiarowe')
     
-    # 2. Generowanie modelu
-    # Jeśli zoom jest włączony, generujemy gęstsze punkty w zakresie zoomu
-    # w przeciwnym razie w całym zakresie danych
+    # 2. Generowanie modelu (obsługa ZOOM z CONFIG)
     x_min, x_max = df['Angle'].min(), df['Angle'].max()
     
-    # Obsługa zakresu na podstawie FWHM
-    # popt = [amp, mean, sigma, m, c]
-    xlim_set = False
-    
     if hasattr(CONFIG, 'PLOT_ZOOM_FWHM_MULTIPLIER') and CONFIG.PLOT_ZOOM_FWHM_MULTIPLIER:
-        # Sprawdzamy czy popt ma sensowną długość (czy zawiera mean i sigma)
         if len(popt) >= 3:
             mean = popt[1]
             sigma = popt[2]
             fwhm = 2.355 * sigma
             span = CONFIG.PLOT_ZOOM_FWHM_MULTIPLIER * fwhm
             
-            # Nowe limity
             zoom_min = mean - span
             zoom_max = mean + span
             
-            # Upewniamy się, że nie wychodzimy drastycznie poza zakres danych (opcjonalne)
-            # Ale zazwyczaj chcemy widzieć tło, więc zostawiamy tak jak jest.
             ax.set_xlim(zoom_min, zoom_max)
-            xlim_set = True
-            
-            # Aktualizujemy zakres do rysowania krzywej, żeby była gładka w powiększeniu
             x_min, x_max = zoom_min, zoom_max
 
     x_fit = np.linspace(x_min, x_max, 1000)
     y_fit = func(x_fit, *popt)
-    ax.plot(x_fit, y_fit, 'r-', linewidth=2, label='Dopasowanie (Gauss + Tło)')
+    ax.plot(x_fit, y_fit, 'r-', linewidth=2, label='Dopasowanie')
     
     # 3. Rysowanie tła
     if len(popt) == 5:
@@ -109,21 +97,18 @@ def plot_fit(df, popt, func, title, filename, param_text=""):
         y_bg = m * x_fit + c
         ax.plot(x_fit, y_bg, 'k--', linewidth=1, alpha=0.5, label='Tło liniowe')
 
-    # 4. Skala logarytmiczna
-    if hasattr(CONFIG, 'PLOT_LOG_SCALE') and CONFIG.PLOT_LOG_SCALE:
+    # 4. Obsługa skali logarytmicznej
+    if log_scale:
         ax.set_yscale('log')
-        # Przy skali logarytmicznej warto uważać na wartości <= 0
-        # Matplotlib zazwyczaj sobie radzi, ale można ustawić dolny limit
-        # np. min_positive = df[df['Intensity_cps']>0]['Intensity_cps'].min()
-        # ax.set_ylim(bottom=min_positive)
+        # Opcjonalnie: ustawienie minimalnego limitu Y, żeby log nie wariował przy < 0
+        min_pos = df[df['Intensity_cps'] > 0]['Intensity_cps'].min()
+        if not np.isnan(min_pos):
+             ax.set_ylim(bottom=min_pos * 0.8) # Trochę poniżej najmniejszej wartości
 
-    ax.set_xlabel('2Theta (deg)')
-    ax.set_ylabel('Intensity (cps)')
+    ax.set_xlabel(r'2/Theta (stopnię)')
+    ax.set_ylabel('Intensywność (zliczenia na sekundę)')
     
-    # Ramka z parametrami
     if CONFIG.SHOW_PARAM_TEXT and param_text:
-        # Jeśli jest log scale, czasem tekst lepiej umieścić inaczej, 
-        # ale standardowe xy=(0.02, 0.98) w coords='axes fraction' jest niezależne od skali danych.
         ax.annotate(param_text, xy=(0.02, 0.98), xycoords='axes fraction',
                      verticalalignment='top', bbox=dict(boxstyle="round", fc="white", alpha=0.8))
     
@@ -132,4 +117,4 @@ def plot_fit(df, popt, func, title, filename, param_text=""):
     plt.tight_layout()
     plt.savefig(filename)
     plt.close()
-    print(f"Zapisano wykres dopasowania: {filename}")
+    print(f"Zapisano wykres ({'LOG' if log_scale else 'LIN'}): {filename}")
