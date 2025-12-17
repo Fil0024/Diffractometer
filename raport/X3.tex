@@ -10,207 +10,229 @@
 \usepackage{subcaption}
 \usepackage{booktabs}
 \usepackage{hyperref}
+\usepackage{icomma}
+\usepackage{subcaption}
+\usepackage{placeins}
+\usepackage{siunitx}
+
+% Podwójne klamry są tutaj wymagane!
+\graphicspath{{../results/}}
 
 \geometry{margin=2.5cm}
 
-\title{\textbf{Raport z pomiarów dyfrakcji rentgenowskiej (XRD)}\\
-Analiza stałej sieci i składu chemicznego próbek półprzewodnikowych}
-\author{Imię i Nazwisko}
+\title{\textbf{X3 – POMIAR STAŁYCH SIECI PÓŁPRZEWODNIKOWYCH ROZTWORÓW
+STAŁYCH METODĄ DYFRAKTOMETRII RENTGENOWSKIEJ – PRAWO
+VEGARDA}}
+\author{Filip Gołębiewski}
 \date{\today}
 
 \begin{document}
 
 \maketitle
 
+\begin{abstract}
+W doświadczeniu wykonano pomiary z wykorzystaniem dyfraktometru na trzech próbkach. Pierwsza próbka była wykonano z czystego GaAs, a pozostałe dwie były domieszkowane InAs. Z wykorzystaniem zjawiska dyfrakcji rentgenowskiej zmierzono wartości kąta Bragga dla każdej z próbek i obliczono wartości: stałej sieci oraz domieszkowania indem próbek domieszkowanych.
+
+W przypadku próbki słabiej domieszkowanej otrzymano wartość stałej sieci wynoszącą $a = 5,662 +- 0,003$ \AA{} oraz procentową zawartość indu wartości $2,2 +- 0,7$~\%, natomiast dla próbki bardziej domieszkowanej otrzymano stałą sieci $5,691 +- 0,004$ \AA{} i procentową zawartość indu $9 +- 1$~\%.
+\end{abstract}
+
 \section{Wstęp teoretyczny}
 
-\subsection{Promieniowanie rentgenowskie i struktura krystaliczna}
-Promieniowanie rentgenowskie (promieniowanie X) to rodzaj promieniowania elektromagnetycznego o długości fali w zakresie od 0,01 do 10 nm. W krystalografii najczęściej wykorzystuje się promieniowanie o długości fali rzędu angstremów (\AA), co odpowiada typowym odległościom międzypłaszczyznowym w ciałach stałych. W niniejszym eksperymencie wykorzystano linię emisyjną miedzi $Cu_{K\alpha 1}$ o długości fali:
+\subsection{Promieniowanie rentgenowskie}
+W eksperymencie wykorzystano promieniowanie rentgenowskie, ponieważ w celu uzyskania dyfrakcji na warstwach krystalicznych konieczne jest wykorzystanie promieniowania o długości fali o tym samym rzędzie wielkości co odległość międzypłaszczyznowa, czyli w przybliżeniu 1 \AA{}. Źródło promieniowania w wykorzystane w niniejszym dokumencie miało anodę miedzianą, wykorzystano monochromator, aby odseparować tylko jedną linię emisyjną $Cu_{K\alpha 1}$ o długości fali:
 \begin{equation}
-    \lambda = 1.54056 \, \text{\AA}
+\lambda = 1.54056 \, \text{\AA}
 \end{equation}
-Badane próbki to kryształy o strukturze blendy cynkowej (typowa dla GaAs), która składa się z dwóch przesuniętych względem siebie sieci regularnych ściennie centrowanych (FCC). W analizie skupiono się na refleksie od płaszczyzn krystalograficznych o wskaźnikach Millera $(hkl) = (1, 1, 1)$. Odległość międzypłaszczyznowa $d_{hkl}$ dla układu regularnego wyraża się wzorem:
+
+\subsection{Struktura krystaliczna}
+Badane próbki to kryształy: GaAs oraz dwie próbki GaAs o różnym stopniu domieszkowania InAs. W analizie wykorzystano refleks o wskaźnikach Millera $(hkl)=(1,1,1)$ w układzie regularnym.
+
+Odległość międzypłaszczyznowa $d_{hkl}$ dla układu regularnego wyraża się wzorem:
 \begin{equation}
-    d_{hkl} = \frac{a}{\sqrt{h^2 + k^2 + l^2}}
+d_{hkl} = \frac{a}{\sqrt{h^2 + k^2 + l^2}}
+\label{eq:odleglosc_d}
 \end{equation}
 gdzie $a$ to stała sieci krystalicznej.
 
 \subsection{Prawo Bragga}
-Zjawisko dyfrakcji na sieci krystalicznej opisuje prawo Wulffa-Bragga. Warunkiem koniecznym do wystąpienia konstruktywnej interferencji fal odbitych od równoległych płaszczyzn sieciowych jest spełnienie równania:
+Zjawisko dyfrakcji na sieci krystalicznej opisuje prawo Bragga. Warunkiem koniecznym do wystąpienia konstruktywnej interferencji fal odbitych od równoległych płaszczyzn sieciowych jest spełnienie równania:
 \begin{equation}
-    2d_{hkl} \sin(\theta) = n\lambda
-    \label{eq:bragg}
+n\lambda = 2d_{hkl} \sin(\theta)
+\label{eq:bragg}
 \end{equation}
 gdzie $\theta$ to kąt padania wiązki (kąt Bragga), a $n$ to rząd dyfrakcji (w tym przypadku $n=1$). Prawo to pozwala na wyznaczenie stałej sieci $a$ na podstawie zmierzonego kąta $2\theta$.
 
-\subsection{Domieszkowanie i prawo Vegarda}
-Domieszkowanie polega na wprowadzeniu atomów innego pierwiastka do sieci krystalicznej materiału bazowego, co prowadzi do zmiany jego właściwości fizycznych oraz parametrów geometrycznych sieci. W przypadku roztworów stałych typu $A_{1-x}B_x$, stała sieci zmienia się liniowo wraz ze zmianą składu $x$. Zależność tę opisuje prawo Vegarda:
+\subsection{Prawo Vegarda}
+W niniejszym eksperymencie wykorzystano prawo Vegarda do obliczenia składu w stopie trójskładnikowym In$_x$Ga$_{1-x}$As. W takim przypadku prawo Vagarda można wyrazić jako:
 \begin{equation}
-    a_{mix} = (1-x)a_{A} + x a_{B}
-    \label{eq:vegard}
+a=a_{GaAs}(1-x)+a_{InAs}
+\label{eq:vegard}
 \end{equation}
-gdzie $a_{mix}$ to zmierzona stała sieci stopu, $a_A$ to stała sieci materiału podłoża (np. GaAs), a $a_B$ to stała sieci materiału domieszki (np. InAs). Przekształcając ten wzór, można wyznaczyć zawartość domieszki $x$:
-\begin{equation}
-    x = \frac{a_{mix} - a_{A}}{a_{B} - a_{A}}
-\end{equation}
+gdzie x to proporcjonalna zawartość In, a $1- x$ to
+zawartość Ga, natomiast $a$ to stała sieci stopu.
 
-\subsection{Budowa dyfraktometru i metody pomiarowe}
-Dyfraktometr rentgenowski składa się z trzech głównych elementów: lampy rentgenowskiej (źródła), goniometru (uchwytu próbki) oraz detektora.
+\section{Układ pomiarowy}
+
+\subsection{Budowa dyfraktometru i wykorzystane typy skanów}
+Dyfraktometr rentgenowski składa się z trzech głównych elementów: lampy rentgenowskiej, goniometru oraz detektora.
 Wyróżniamy kilka podstawowych typów skanów:
 \begin{itemize}
-    \item \textbf{Skan $\omega$ (Rocking curve):} Detektor jest nieruchomy w pozycji piku dyfrakcyjnego, a próbka obraca się wokół osi $\omega$. Służy do oceny jakości krystalicznej (mozaikowości) warstwy.
-    \item \textbf{Skan $2\theta$:} Próbka jest nieruchoma, a detektor porusza się po łuku.
-    \item \textbf{Skan sprzężony $2\theta/\omega$:} Próbka obraca się o kąt $\theta$, a detektor jednocześnie o $2\theta$. Pozwala to na dokładne wyznaczenie odległości międzypłaszczyznowych.
+\item \textbf{Skan $\omega$:} Detektor jest nieruchomy w pozycji piku dyfrakcyjnego, a próbka obraca się wokół osi $\omega$. Służy do oceny jakości krystalicznej warstwy.
+\item \textbf{Skan $2\theta$:} Próbka jest nieruchoma, a detektor porusza się po łuku.
+\item \textbf{Skan sprzężony $2\theta/\omega$:} Próbka obraca się o kąt $\theta$, a detektor jednocześnie o $2\theta$.
 \end{itemize}
+W celu ustawienia próbki i detektora w odpowiednich pozycjach do zarejestrowania dyfrakcji wykonywano kilka kalibracyjnych skanów $\omega$ i $2\theta$ na zmianę. Skany zawarte w tym raporcie wykonano po dokładnej kalibracji z ustawionym najmnijszym dostępnym krokiem (0,005 $^\circ$).
 
-Układ detekcyjny może być skonfigurowany w różnych wariantach wpływających na rozdzielczość i intensywność:
-\begin{enumerate}
-    \item \textbf{Bez analizatora (Open detector):} Najwyższa intensywność, niska rozdzielczość kątowa.
-    \item \textbf{Szczelina przed detektorem:} Kompromis między intensywnością a rozdzielczością.
-    \item \textbf{Analizator (kryształ):} Bardzo wysoka rozdzielczość, ale znaczny spadek intensywności (wymaga długich czasów zliczania).
-\end{enumerate}
+Do pomiarów wykorzystano dyfraktometr Philips MRD~\cite{dyfraktometr}.
 
-\subsection{Procedura ustawiania osi Z}
-Kluczowym elementem kalibracji próbki jest ustawienie jej wysokości (oś Z). Procedura ta polega na ustawieniu goniometru w pozycji bezpośredniej wiązki ($\omega = 0, 2\theta = 0$). Następnie przesuwa się próbkę w osi Z, monitorując natężenie sygnału na detektorze. Prawidłowa pozycja to taka, w której próbka przesłania dokładnie połowę wiązki pierwotnej (natężenie spada do 50\% wartości maksymalnej). Zapewnia to, że oś obrotu goniometru leży dokładnie na powierzchni próbki.
+\subsection{Dostępne konfigurację detektora}
 
-\section{Metodyka analizy danych i niepewności}
+Wykorzystywano trzy konfiguracje detektora różniące się rozdzielczością oraz intensywnością rejestrowanego sygnału. Skalibrowano urządzenie tak, aby przy po ustawieniu kąta $2/theta$ wiązka ze źródła wpadała do detektora z analizatorem, w celu przełączenia się na detektor bez analizatora zgodnie z instrukcją dyfraktometru \cite{dyfraktometr} dodawano do kąta $2\theta$ $4,55^\circ$, ostatnia konfiguracja również wykorzystuje detektor bez analizatora, ale ze wsuniętą płytką z wąską szczeliną.
 
-Do analizy pików dyfrakcyjnych zastosowano dopasowanie funkcją Gaussa wraz z liniowym tłem. Na podstawie parametrów dopasowania wyznaczono środek piku ($2\theta_{meas}$) oraz jego szerokość połówkową (FWHM).
+W celu sprawdzenia charakterystyki konfiguracji detektora wykonano trzy skany $2\theta$ (Rys.~\ref{fig:calib}). Widać, że konfiguracja bez analizatora daje najmniejszą rozdzielczość, ale największą intensywność, natomiast konfiguracja z analizatorem daje najlepszą rozdzielczość kosztem intensywności, konfiguracja ze szczeliną daje wartości pośrednie między nimi.
 
-\subsection{Kalibracja instrumentalna}
-Ze względu na stwierdzone wady techniczne układu pomiarowego, konieczne było wyznaczenie poprawki instrumentalnej (przesunięcia zera). Wykorzystano do tego próbkę referencyjną nr 1 (czyste podłoże GaAs).
-Wartość teoretyczna kąta $2\theta$ dla GaAs (111) wynosi:
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.9\textwidth]{plot_calib_combined_shifted.pdf}
+\caption{Porównanie skanów $2\theta$ wykonanych każdym z detektorów. Detektor bez analizatora (pomarańczowy), ze szczeliną (zielony) oraz z analizatorem (niebieski). Widoczne przy osiach jednostki to: deg, czyli stopnie oraz cps, czyli zliczenia na sekundę (eng. counts per second)}\label{fig:calib}
+\end{figure}
+
+\subsection{Ustawianie osi Z}
+W celu uzyskania poprawnych wyników, konieczne było odpowiednie ustawienie osi z, czyli dostosowanie aparatury do grubości konkretnej próbki. W celu kalibracji osi z ustawiano kąty $\omega$ oraz $2\theta$ na zero i przesuwano próbkę do momentu, aż będzie ona blokowało około połowę wiązki. Taka procedura ustawiania osi z jest konieczna, aby po ustawieniu kąta omega cała wiązka padała na powierzchnię próbki.
+
+\section{Niepewności pomiarowe}
+Jako niepewność pomiarową $2\theta$ przyjęto szerokość połówkową (FWHM) rozkładu Gaussa dopasowanego do wykresu natężenia padającej wiązki. Jako FWHM przyjęto:
 \begin{equation}
-    2\theta_{ref} = 2 \arcsin\left( \frac{\lambda \sqrt{3}}{2 a_{GaAs}} \right)
+FWHM = 2,335 \cdot \sigma
 \end{equation}
-Przyjmując $a_{GaAs} = 5.653$ \AA, obliczono $2\theta_{theory} \approx 27.30^\circ$.
+gdzie $\sigma$ to odchylenie standardowe otrzymane przy dopasowaniu rozkładu Gaussa.
+
+Pozostałe niepewności obliczano z wykorzystaniem wzoru na propagacje niepewności:
+\begin{equation}
+u_f=\sqrt{ \sum_{i=1}^n \left( \frac{\partial f}{\partial x_i}\cdot u_{x_i} \right)^2 }
+\end{equation}
+
+\newpage
+\section{Analiza danych}
+
+Ze względu na wady techniczne układu pomiarowego, konieczne było wyznaczenie poprawki. Wykorzystano do tego próbkę referencyjną (czysty GaAs).
+
+Wartość teoretyczna~\eqref{eq:bragg} kąta $2\theta$ dla GaAs (111) wynosi:
+\begin{equation}
+2\theta_{teoretyczne} = 2 \arcsin\left( \frac{\lambda \sqrt{3}}{2 a_{GaAs}} \right)
+\end{equation}
+Przyjmując $a_{GaAs} = 5.653$ \AA, obliczono $2\theta_{teoretyczne} \approx 27.30^\circ$.
 Poprawka $\Delta$ została zdefiniowana jako:
 \begin{equation}
-    \Delta = 2\theta_{measured, \#1} - 2\theta_{theory}
+\Delta = 2\theta_{zmierzone} - 2\theta_{teoretyczne}
 \end{equation}
 Poprawka ta została odjęta od wyników pomiarowych dla wszystkich próbek.
 
-\subsection{Szacowanie niepewności}
-Przyjęto konserwatywne założenie, że niepewność wyznaczenia pozycji piku $u(2\theta)$ jest powiązana z jego szerokością połówkową (FWHM). Do obliczeń wykorzystano metodę propagacji niepewności (różniczka zupełna).
+\subsection{Analiza skanów $2\theta$/$\omega$}
 
-Niepewność stałej sieci $u(a)$:
-Ze wzoru $a = \frac{\lambda \sqrt{3}}{2 \sin\theta}$ (dla $2\theta/2 = \theta$):
+Dla każdej z próbek wykonano skan $2\theta$/$\omega$ i dopasowano do nich rozkład Gaussa:
 \begin{equation}
-    u(a) = \left| \frac{da}{d\theta} \right| u(\theta) = a \cdot \cot(\theta) \cdot u(\theta_{rad})
+f(x) = A \cdot \exp \left(-\frac{\left( x - B \right)^2}{2 C^2}\right)+Dx+E
 \end{equation}
-gdzie $u(\theta_{rad})$ to niepewność kąta $\theta$ wyrażona w radianach (połowa niepewności $2\theta$).
+gdzie $A$ jest stałą określającą maksymalną wartość krzywej Gaussa, $B$ jest średnią wartością rozkładu Gaussa, czyli $B=2\theta$, $C=\sigma$ to odchylenie standardowe, a $D$ i $E$ to współczynniki zależności liniowej, która została dodana, aby uwzględnić szum (Rys. \ref{fig:sample1_fit}, \ref{fig:sample2_fit}, \ref{fig:sample3_fit}).
 
-Niepewność składu $u(x)$:
-Korzystając z prawa Vegarda:
-\begin{equation}
-    u(x) = \frac{u(a)}{|a_{B} - a_{A}|}
-\end{equation}
-
-\section{Wyniki eksperymentu}
-
-\subsection{Próbka \#1 (Referencyjna GaAs)}
-Dla próbki nr 1 wykonano skan $2\theta/\omega$. Wynik dopasowania przedstawiono na Rysunku \ref{fig:sample1_fit}.
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.7\textwidth]{results/plot_#1_fit_lin.pdf}
-    \caption{Dopasowanie krzywej Gaussa do refleksu (111) dla Próbki \#1 (skala liniowa).}
-    \label{fig:sample1_fit}
-\end{figure}
-
-Wyznaczony kąt $2\theta$ posłużył do kalibracji. Wykres krzywej kołysania (omega scan) pokazuje symetryczny kształt (Rys. \ref{fig:sample1_omega}), co świadczy o wysokiej jakości krystalicznej podłoża.
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.7\textwidth]{results/plot_#1_omega.pdf}
-    \caption{Skan omega (Rocking Curve) dla Próbki \#1.}
-    \label{fig:sample1_omega}
-\end{figure}
-
-\subsection{Próbka \#2 (Słabo domieszkowana)}
-Po uwzględnieniu poprawki kalibracyjnej, wyznaczono stałą sieci oraz skład $x$.
-Wynik dopasowania $2\theta/\omega$ widoczny jest na Rysunku \ref{fig:sample2_fit}.
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.7\textwidth]{results/plot_#2_fit_lin.pdf}
-    \caption{Dopasowanie krzywej Gaussa dla Próbki \#2.}
-    \label{fig:sample2_fit}
-\end{figure}
-
-Analiza skanu omega (Rys. \ref{fig:sample2_omega}) wykazuje, że pik jest nieco szerszy niż dla próbki referencyjnej. Można zauważyć subtelne zaburzenie kształtu Gaussa (delikatna asymetria), co sugeruje początek zmian w strukturze wywołanych domieszkowaniem.
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.7\textwidth]{results/plot_#2_omega.pdf}
-    \caption{Skan omega dla Próbki \#2.}
-    \label{fig:sample2_omega}
-\end{figure}
-
-\textbf{Wyniki obliczeń dla Próbki \#2:}
-\begin{itemize}
-    \item Zmierzony kąt $2\theta$ (skorygowany): 27.2435$^\circ$
-    \item Stała sieci $a$: 5.665 \AA
-    \item Wyliczony skład $x$: 0.029 $\pm$ 0.016
-\end{itemize}
-
-\subsection{Próbka \#3 (Mocno domieszkowana)}
-W przypadku próbki nr 3 przesunięcie piku w stronę mniejszych kątów jest wyraźne, co oznacza wzrost stałej sieci.
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.7\textwidth]{results/plot_#3_fit_lin.pdf}
-    \caption{Dopasowanie krzywej Gaussa dla Próbki \#3.}
-    \label{fig:sample3_fit}
-\end{figure}
-
-Skan omega dla tej próbki (Rys. \ref{fig:sample3_omega}) różni się drastycznie od referencyjnego. Widać wyraźne rozdwojenie piku lub silną asymetrię – dwa nałożone na siebie rozkłady (jeden silniejszy, drugi słabszy). Świadczy to o segregacji domieszki, istnieniu bloków mozaikowych o nieco różnej orientacji lub gradientach naprężeń w silnie domieszkowanej warstwie.
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.7\textwidth]{results/plot_#3_omega.pdf}
-    \caption{Skan omega dla Próbki \#3 – widoczna struktura wielopikowa.}
-    \label{fig:sample3_omega}
-\end{figure}
-
-\textbf{Wyniki obliczeń dla Próbki \#3:}
-\begin{itemize}
-    \item Zmierzony kąt $2\theta$ (skorygowany): 27.1235$^\circ$
-    \item Stała sieci $a$: 5.689 \AA
-    \item Wyliczony skład $x$: 0.089 $\pm$ 0.027
-\end{itemize}
-
-\section{Zestawienie zbiorcze i weryfikacja}
-
-Poniżej przedstawiono tabelę zbiorczą uzyskanych wyników (Tabela \ref{tab:results}). Wartości $x$ zostały wyznaczone przy założeniu, że drugim składnikiem jest InAs ($a_B \approx 6.0583$ \AA).
-
-\begin{table}[H]
+\begin{table}[ht]
 \centering
-\caption{Wyniki analizy dyfrakcyjnej dla badanych próbek.}
-\label{tab:results}
-\begin{tabular}{@{}lcccc@{}}
+\caption{Wyniki analizy dyfrakcyjnej dla badanych próbek.}\label{tab:dopasowania}
+\begin{tabular}{@{}lccc@{}}
 \toprule
-Próbka & $2\theta_{corr}$ [$^\circ$] & FWHM [$^\circ$] & Stała sieci $a$ [\AA] & Skład $x$ (Vegard) \\ \midrule
-\#1 (Ref) & 27.3032 & 0.046 & 5.653 & 0.000 \\
-\#2       & 27.2435 & 0.065 & 5.665 & 0.029 $\pm$ 0.016 \\
-\#3       & 27.1235 & 0.111 & 5.689 & 0.089 $\pm$ 0.027 \\ \bottomrule
+Parametr & Próbka 1 & Próbka 2 & Próbka 3 \\ \midrule
+$A$ (amplituda) [deg] & $\num{14980 +- 40}$ & $\num{3385 +- 8}$ & $\num{858 +- 4}$ \\ \addlinespace
+$B$ (średnia) [deg] & $\num{27,37091 +- 0,00001}$ & $\num{27,32787 +- 0,00001}$ & $\num{27,18220 +- 0,00004}$ \\ \addlinespace
+$C$ ($\sigma$) [deg] & $\num{0,004002 +- 0,000012}$ & $\num{0,004038 +- 0,000011}$ & $\num{0,006995 +- 0,000038}$ \\ \addlinespace
+$D$ (nachylenie) [cps/deg] & $\num{-3 +- 36}$ & $\num{4 +- 5}$ & $\num{2,5 +- 2,7}$ \\ \addlinespace
+$E$ (tło) [cps] & $\num{111 +- 995}$ & $\num{-113 +- 149}$ & $\num{71 +- 75}$ \\ \bottomrule
 \end{tabular}
 \end{table}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.8\textwidth]{results/plot_vegard_law.pdf}
-    \caption{Wizualizacja punktów pomiarowych na tle teoretycznej linii prawa Vegarda.}
-    \label{fig:vegard}
+Z wykorzystaniem wzorów
+
+Dla próbki referencyjnej (czysty GaAs), otrzymano wartość $A=2\theta_{zmierzone}=27,3709^\circ$, obliczono poprawkę $\Delta = 0.0686^\circ$, którą uwzględniono we wszystkich wynikach.
+
+Wartości stałej sieci $a$ (wzory~\eqref{eq:odleglosc_d} oraz~\ref{eq:bragg}) oraz stężenie InAs $x$ (wzór~\eqref{eq:vegard}) obliczono, wykorzystując wzory teoretyczne. Jako niepewność średnij wartości kąta (środek krzywej Gaussa) przyjęto FWHM, natomiast niepewności $a$ oraz $x$ obliczono z wykorzystaniem propagacji niepewności:
+\begin{equation}
+u_a = \sqrt{\left( \frac{\partial a}{\partial (2\theta)} \cdot u_{2\theta} \right)^2} = \frac{a}{2} \cot(\theta) \cdot u_{2\theta}^{rad}
+\end{equation}
+\begin{equation}
+u_x = \left| \frac{\partial x}{\partial a} \right| u_a = \frac{u_a}{|a_{InAs} - a_{GaAs}|}
+\end{equation}
+Wyniki dla wszystkich próbek przedstawiono w Tabeli~\ref{tab:results}.
+
+\begin{table}[ht]
+\centering
+\caption{Wyniki analizy dyfrakcyjnej. Wartości stałej sieci $a$ oraz stężenie InAs $x$.}\label{tab:results}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+& Próbka 1 & Próbka 2 & Próbka 3 \\ \midrule
+$2\theta$ [deg] & 27,30$\pm$0,01 & 27,26$\pm$0,01 & 27,11$\pm$0,02 \\ \addlinespace
+$\theta_B$ [deg] & 13,651 $\pm$ 0,005& 13,630 $\pm$ 0,005 & 13,557 $\pm$ 0,008 \\ \addlinespace
+$a$ [\AA] & 5,653 $\pm$ 0,002 & 5,662 $\pm$ 0,002 & 5,692 $\pm$ 0,003 \\ \addlinespace
+$x$ [\%] & 0 & 2,2 $\pm$ 0,5 & 9,5 $\pm$ 0,8 \\ \addlinespace
+\\ \bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.9\textwidth]{plot_sample1_fit_lin.pdf}
+\caption{Dopasowanie krzywej Gaussa do skanu $2\theta$/$\omega$ dla Próbki 1 (referencyjna).}\label{fig:sample1_fit}
 \end{figure}
 
-\section{Wnioski}
-Przeprowadzone badania dyfrakcyjne pozwoliły na wyznaczenie składu chemicznego trójskładnikowych roztworów stałych.
-\begin{enumerate}
-    \item Zastosowanie poprawki na przesunięcie zera goniometru było kluczowe dla uzyskania poprawnej wartości stałej sieci próbki referencyjnej GaAs.
-    \item Próbka \#2 wykazuje niewielkie domieszkowanie ($x \approx 3\%$). Jej jakość krystaliczna jest dobra, choć widoczne jest niewielkie poszerzenie krzywej kołysania.
-    \item Próbka \#3 posiada znacznie wyższą zawartość domieszki ($x \approx 9\%$). Analiza skanu omega ujawniła znaczną degradację jakości strukturalnej (asymetria/rozdwojenie piku), co jest typowym efektem relaksacji naprężeń lub niejednorodności składu przy wyższym poziomie domieszkowania.
-    \item Prawo Vegarda umożliwiło powiązanie zmian kąta dyfrakcji ze zmianą składu chemicznego stopu.
-\end{enumerate}
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.9\textwidth]{plot_sample2_fit_lin.pdf}
+\caption{Dopasowanie krzywej Gaussa do skanu $2\theta$/$\omega$ dla Próbki 2.}\label{fig:sample2_fit}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.9\textwidth]{plot_sample3_fit_lin.pdf}
+\caption{Dopasowanie krzywej Gaussa do skanu $2\theta$/$\omega$ dla Próbki 3.}\label{fig:sample3_fit}
+\end{figure}
+
+\FloatBarrier\subsection{Analiza jakościowa skanów $\omega$}
+
+Wszystkie trzy próbki zbadano także z wykorzystaniem skanu omega. Najpierw ustawiono detektor w położeniu dogodnym do rejestrowania dyfrakcji ($2\theta_B$), następnie wykonano skan $\omega$, czyli przekręcano próbkę względem wiązki rentgenowskiej. Skan ten pozwolił na analizę jakościową powierzchni próbki.
+
+Na skanie próbki pierwszej (Rys. \ref{fig:sample1_omega}), zarejestrowano wyraźny pik bez poważnych zniekształceń. Pozwala to stwierdzić wysoką jakość sieci krystalicznej tej próbki.
+W przypadku próbki drugiej (Rys. \ref{fig:sample2_omega}) zarejestrowano zniekształcenie piku, które przypomina drugi pik blisko głównego. Oznacza to gorszą jakość sieci krystalicznej oraz obecność defektów i przesunięć w strukturze krystalicznej. Można zauważyć także, że pik ten jest znacznie szerszy od pierwszego (około 0,05$^\circ$ przy podstawie, a w pierwszej próbce około 0,01$^\circ$).
+Najgorszej jakości okazała się próbka trzecia (Rys. \ref{fig:sample3_omega}). W tym przypadku również widać dwa zbliżone piki, ponadto szerokość piku jeszcze bardziej się powiększyła (do około 0.2$^\circ$).
+
+Wskazuje to, że próbki domieszkowane charakteryzują się gorszą jakością krystaliczną w porównaniu do wzorca. Obserwowany efekt, w tym wielopikowa struktura widoczna szczególnie wyraźnie na Rysunku~\ref{fig:sample3_omega}, może wynikać z obecności defektów sieciowych (np. dyslokacji) wprowadzonych w procesie domieszkowania, naprężeń w sieci krystalicznej lub istnienia bloków mozaikowych (podziaren) o nieznacznie różnej orientacji krystalograficznej.
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.9\textwidth]{plot_sample1_omega.pdf}
+\caption{Skan omega (Rocking Curve) dla Próbki \#1.}\label{fig:sample1_omega}
+\end{figure}
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.9\textwidth]{plot_sample2_omega.pdf}
+\caption{Skan omega dla Próbki \#2.}\label{fig:sample2_omega}
+\end{figure}
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.9\textwidth]{plot_sample3_omega.pdf}
+\caption{Skan omega dla Próbki 3, widoczna struktura wielopikowa.}\label{fig:sample3_omega}
+\end{figure}
+
+\FloatBarrier
+\section{Podsumowanie}
+W ramach przeprowadzonego eksperymentu zrealizowano pomiary dyfraktometryczne mające na celu wyznaczenie stałych sieci oraz składu chemicznego półprzewodników. Wykorzystanie prawa Bragga pozwoliło określić kąty dyfrakcji. Na podstawie obliczonych stałych sieci i zastosowaniu prawa Vegarda wyznaczono stężenie InAs w badanych próbkach, potwierdzając, że wprowadzenie atomów indu do sieci GaAs powoduje wzrost stałej sieci, co jest zgodne z przewidywaniami teoretycznymi. Analiza jakościowa profilu refleksów dyfrakcyjnych wykazała, że proces domieszkowania wpływa na strukturę rzeczywistą materiału, prowadząc do obniżenia jego doskonałości krystalicznej w porównaniu do czystego podłoża.
+
+\begin{thebibliography}{9}
+
+\bibitem{dyfraktometr}
+Philips, \emph{MRD – User guide}, Instrukcja obsługi do dyfraktometru Philips MRD, Philips, 1993.
+
+\end{thebibliography}
 
 \end{document}
+
+

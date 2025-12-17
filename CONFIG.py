@@ -11,13 +11,13 @@ REF_HKL = (1, 1, 1)
 LATTICE_CONSTANT_B = 6.0583 
 
 # --- KONFIGURACJA WYGLĄDU WYKRESÓW ---
-SHOW_TITLES = True
-SHOW_LEGENDS = True
-SHOW_PARAM_TEXT = True
+SHOW_TITLES = False
+SHOW_LEGENDS = False
+SHOW_PARAM_TEXT = False
 
 # Mnożnik FWHM dla zakresu osi X na wykresach dopasowania.
 # Np. 5.0 oznacza zakres: środek +/- 5 * FWHM.
 # Ustaw None lub 0, aby zostawić domyślny, pełny zakres.
-PLOT_ZOOM_FWHM_MULTIPLIER = 6.0
+PLOT_ZOOM_FWHM_MULTIPLIER = 4
 
 CUSTOM_TITLES = {}

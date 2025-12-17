@@ -59,6 +59,19 @@ def fit_peak(df):
 
         p0 = [amp_guess, mean_guess, sigma_guess, m_guess, c_guess]
         popt, pcov = curve_fit(gaussian_linear, x, y, p0=p0)
+        A, B, C, D, E = popt
+        perr = np.sqrt(np.diag(pcov))
+        dA, dB, dC, dD, dE = perr
+        
+
+        print(f"--- Wyniki dopasowania ---")
+        print(f"  Amplituda (A): {A:.2f} +- {dA:.2f}")
+        print(f"  Pozycja (B):   {B:.5f} +- {dB:.5f}")
+        print(f"  Sigma (C):     {C:.6f} +- {dC:.6f}")
+        print(f"  Nachylenie (D):{D:.4f} +- {dD:.4f}")
+        print(f"  Tło (E):       {E:.2f} +- {dE:.2f}")
+        print(f"--------------------------")
+
         return popt, pcov
     except:
         return None
@@ -77,15 +90,10 @@ def calculate_lattice_from_2theta(two_theta_deg, wavelength, hkl=(1,1,1)):
     h, k, l = hkl
     return d * np.sqrt(h**2 + k**2 + l**2)
 
-def calculate_uncertainty(two_theta_deg, delta_2theta_deg, wavelength, hkl=(1,1,1)):
+def calculate_uncertainty(two_theta_deg, delta_2theta_deg, a):
     theta_rad = np.radians(two_theta_deg / 2)
     delta_theta_rad = np.radians(delta_2theta_deg / 2)
-    h, k, l = hkl
-    sqrt_hkl = np.sqrt(h**2 + k**2 + l**2)
-    num = wavelength * sqrt_hkl * np.cos(theta_rad)
-    den = 2 * (np.sin(theta_rad)**2)
-    if den == 0: return 0
-    return (np.abs(num / den)) * delta_theta_rad
+    return a * (1 / np.tan(theta_rad))* delta_theta_rad
 
 def calculate_vegard_x(a_measured, da_measured, a_A, a_B):
     denominator = a_B - a_A
@@ -149,6 +157,12 @@ def main():
         figures.plot_combined_scans(calib_data, 'Porownanie skanow kalibracyjnych', 
                                     os.path.join(RESULTS_DIR, 'plot_calib_combined.pdf'))
 
+        figures.plot_combined_shifted_scans(
+                calib_data, 
+                'Porownanie skanow (wysrodkowane)', 
+                os.path.join(RESULTS_DIR, 'plot_calib_combined_shifted.pdf')
+            )
+
     # 2. Kalibracja na Próbce #1
     print("\n[2/4] Kalibracja na podstawie Próbki #1 (GaAs)...")
     theo_2theta_ref = calculate_theoretical_2theta(CONFIG.REF_LATTICE_CONSTANT_A, CONFIG.WAVELENGTH_KALPHA1)
@@ -182,19 +196,32 @@ def main():
     
     results = []
     all_2to_scans = []
+    all_omega_scans = []  # NOWA LISTA do zbierania skanów Omega
 
     for name, files in samples_map.items():
+        # --- NOWOŚĆ: Tworzymy bezpieczną nazwę pliku (zamiana # na Sample) ---
+        safe_name = name.replace('#', 'Sample')
+        
+        # Omega (bez zmian w logice, zmiana tylko w nazwie pliku)
         f_oza = os.path.join(DATA_DIR, files['oza'])
         if os.path.exists(f_oza):
             _, df_o = utils.parse_xrd_file(f_oza)
             if not df_o.empty:
-                figures.plot_single_scan(df_o, f'Omega {name}', os.path.join(RESULTS_DIR, f'plot_{name}_omega.pdf'))
+                # Zbieramy dane do wykresu zbiorczego Omega
+                all_omega_scans.append((f"Omega {name}", df_o))
+                
+                # Używamy safe_name w nazwie pliku:
+                figures.plot_single_scan(df_o, f'Omega {name}', 
+                                         os.path.join(RESULTS_DIR, f'plot_{safe_name}_omega.pdf'))
 
+        # 2Theta/Omega
         f_2to = os.path.join(DATA_DIR, files['2to'])
         if not os.path.exists(f_2to): continue
         _, df_2t = utils.parse_xrd_file(f_2to)
         if df_2t.empty: continue
+        
         all_2to_scans.append((f"Próbka {name}", df_2t))
+        print(f"Dopasowanie do: {name}")
         
         fit_res = fit_peak(df_2t)
         if fit_res is not None:
@@ -206,10 +233,10 @@ def main():
             fwhm_err = 2.355 * sigma_err
             
             corrected_2theta = meas_2theta - correction_delta
-            total_unc_pos = np.sqrt(fwhm**2 + uncertainty_correction**2)
+            total_unc_pos = fwhm
             
             a = calculate_lattice_from_2theta(corrected_2theta, CONFIG.WAVELENGTH_KALPHA1)
-            da = calculate_uncertainty(corrected_2theta, total_unc_pos, CONFIG.WAVELENGTH_KALPHA1)
+            da = calculate_uncertainty(corrected_2theta, total_unc_pos, a)
             x_vegard, dx_vegard = calculate_vegard_x(a, da, CONFIG.REF_LATTICE_CONSTANT_A, CONFIG.LATTICE_CONSTANT_B)
             
             results.append({
@@ -231,23 +258,35 @@ def main():
                     f"a = {a:.4f}\n"
                     f"x = {x_vegard:.3f}")
             
-            # --- ZMIANA: Generowanie dwóch wykresów (LIN i LOG) ---
-            
-            # 1. Skala Liniowa (suffix _lin)
+            # 1. Skala Liniowa
             figures.plot_fit(df_2t, popt, gaussian_linear, f'Fit {name} (Lin)', 
-                             os.path.join(RESULTS_DIR, f'plot_{name}_fit.pdf'), 
+                             os.path.join(RESULTS_DIR, f'plot_{safe_name}_fit_lin.pdf'), 
                              info, log_scale=False)
 
-            # 2. Skala Logarytmiczna (suffix _log)
+            # 2. Skala Logarytmiczna
             figures.plot_fit(df_2t, popt, gaussian_linear, f'Fit {name} (Log)', 
-                             os.path.join(RESULTS_DIR, f'plot_{name}_fit_log.pdf'), 
+                             os.path.join(RESULTS_DIR, f'plot_{safe_name}_fit_log.pdf'), 
                              info, log_scale=True)
 
     # 4. Zapis
     print("\n[4/4] Generowanie raportu CSV...")
     if all_2to_scans:
+        # Zestawienie 2Theta/Omega
         figures.plot_combined_scans(all_2to_scans, 'Zestawienie 2Theta/Omega', 
                                     os.path.join(RESULTS_DIR, 'plot_all_samples_2to.pdf'))
+        
+        # Zestawienie 2Theta/Omega (WYŚRODKOWANE)
+        figures.plot_combined_shifted_scans(all_2to_scans, 'Zestawienie 2Theta/Omega (Wysrodkowane)', 
+                                    os.path.join(RESULTS_DIR, 'plot_all_samples_2to_shifted.pdf'))
+
+    if all_omega_scans:
+        # Zestawienie Omega
+        figures.plot_combined_scans(all_omega_scans, 'Zestawienie Omega', 
+                                    os.path.join(RESULTS_DIR, 'plot_all_samples_omega.pdf'))
+        
+        # Zestawienie Omega (WYŚRODKOWANE)
+        figures.plot_combined_shifted_scans(all_omega_scans, 'Zestawienie Omega (Wysrodkowane)', 
+                                    os.path.join(RESULTS_DIR, 'plot_all_samples_omega_shifted.pdf'))
 
     if results:
         plot_vegard_line(results, os.path.join(RESULTS_DIR, 'plot_vegard_law.pdf'))

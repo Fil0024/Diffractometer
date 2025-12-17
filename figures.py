@@ -15,12 +15,17 @@ def _apply_style(ax, title, filename):
         ax.legend()
         
     ax.grid(True, linestyle='--', alpha=0.6, which='both')
+    
+    ax.xaxis.label.set_size(14) 
+    ax.yaxis.label.set_size(14)
+
+    ax.tick_params(axis='both', which='major', labelsize=12)
 
 def plot_single_scan(df, title, filename):
-    fig, ax = plt.subplots(figsize=(8, 6))
+    fig, ax = plt.subplots(figsize=(11, 4))
     ax.plot(df['Angle'], df['Intensity_cps'], color='blue', linewidth=1, label='Dane')
-    ax.set_xlabel('Angle (deg)')
-    ax.set_ylabel('Intensity (cps)')
+    ax.set_xlabel(r'$\omega$ [deg]')
+    ax.set_ylabel('Natężenie [cps]')
     
     _apply_style(ax, title, filename)
     
@@ -34,8 +39,8 @@ def plot_combined_scans(data_list, title, filename):
     for label, df in data_list:
         ax.plot(df['Angle'], df['Intensity_cps'], label=label, linewidth=1)
     
-    ax.set_xlabel('Angle (deg)')
-    ax.set_ylabel('Intensity (cps)')
+    ax.set_xlabel(r'$\omega$ [deg]')
+    ax.set_ylabel('Natężenie [cps]')
     
     _apply_style(ax, title, filename)
     
@@ -53,8 +58,8 @@ def plot_combined_shifted_scans(data_list, title, filename):
         shifted_angle = df['Angle'] - max_angle
         ax.plot(shifted_angle, df['Intensity_cps'], label=f"{label}", linewidth=1)
     
-    ax.set_xlabel('Relative Angle (deg)')
-    ax.set_ylabel('Intensity (cps)')
+    ax.set_xlabel(r'Względny kąt [deg]]')
+    ax.set_ylabel('Natężenie [cps]')
     ax.axvline(x=0, color='gray', linestyle=':', alpha=0.5)
     
     _apply_style(ax, title, filename)
@@ -66,7 +71,7 @@ def plot_combined_shifted_scans(data_list, title, filename):
 
 # ZMODYFIKOWANA FUNKCJA
 def plot_fit(df, popt, func, title, filename, param_text="", log_scale=False):
-    fig, ax = plt.subplots(figsize=(8, 6))
+    fig, ax = plt.subplots(figsize=(11, 4))
     
     # 1. Rysowanie danych
     ax.plot(df['Angle'], df['Intensity_cps'], 'b.', markersize=3, label='Dane pomiarowe')
@@ -105,8 +110,8 @@ def plot_fit(df, popt, func, title, filename, param_text="", log_scale=False):
         if not np.isnan(min_pos):
              ax.set_ylim(bottom=min_pos * 0.8) # Trochę poniżej najmniejszej wartości
 
-    ax.set_xlabel(r'2/Theta (stopnię)')
-    ax.set_ylabel('Intensywność (zliczenia na sekundę)')
+    ax.set_xlabel(r'$2\theta$ [deg]')
+    ax.set_ylabel('Natężenie [cps]')
     
     if CONFIG.SHOW_PARAM_TEXT and param_text:
         ax.annotate(param_text, xy=(0.02, 0.98), xycoords='axes fraction',
